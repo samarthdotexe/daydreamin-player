@@ -1,14 +1,11 @@
-/* Import a clean, modern font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
-/* Basic reset to ensure consistency across different browsers */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* Center everything on the screen and give it a dreamy background */
 body {
     background: radial-gradient(circle at top right, #1a0b2e 0%, #000000 100%);
     min-height: 100vh;
@@ -29,7 +26,6 @@ body {
     max-width: 1200px;
 }
 
-/* The main player card styling */
 .music-container {
     background-color: rgba(20, 20, 30, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -76,7 +72,6 @@ body {
     margin-top: 20px;
 }
 
-/* Album Art Styling */
 .img-container {
     width: 100%;
     height: 100%;
@@ -88,16 +83,12 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    /* Makes the image a perfect circle */
     object-fit: cover;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     animation: rotate 15s linear infinite;
-    /* Slow spinning animation */
     animation-play-state: paused;
-    /* Paused by default until playing */
 }
 
-/* Class to trigger the spin animation via JavaScript */
 .music-container.play .img-container img {
     animation-play-state: running;
 }
@@ -117,7 +108,6 @@ body {
     animation: gradientShift 3s ease infinite, rotate 10s linear infinite;
 }
 
-/* Show the glowing ring only when playing */
 .music-container.play .glow-ring {
     opacity: 0.6;
 }
@@ -146,7 +136,6 @@ body {
     }
 }
 
-/* Typography styling */
 h2 {
     margin: 0;
     font-size: 22px;
@@ -164,7 +153,6 @@ h3 {
     text-transform: uppercase;
 }
 
-/* Progress bar container (the gray background) */
 .progress-container {
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -178,18 +166,15 @@ h3 {
     overflow: hidden;
 }
 
-/* The actual progress bar (the filled part) */
 .progress-bar {
     background: #00f2fe;
     border-radius: 10px;
     height: 100%;
     width: 0%;
-    /* Starts at 0, updated by JS */
     transition: width 0.1s linear;
     box-shadow: 0 0 12px #00f2fe, 0 0 4px #00f2fe;
 }
 
-/* NEW: Volume styling layout */
 .volume-container {
     display: flex;
     align-items: center;
@@ -203,15 +188,12 @@ h3 {
     color: #a0a0b5;
     font-size: 14px;
     width: 20px;
-    /* Fixed width prevents UI jumping when switching icons */
     text-align: center;
 }
 
-/* Customizing the track slider appearance */
 #volume-slider,
 #yt-volume-slider {
     -webkit-appearance: none;
-    /* Removes default browser styling */
     appearance: none;
     width: 60%;
     height: 4px;
@@ -220,7 +202,6 @@ h3 {
     outline: none;
 }
 
-/* Customizing the slider circular thumb knob */
 #volume-slider::-webkit-slider-thumb,
 #yt-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -238,10 +219,8 @@ h3 {
 #yt-volume-slider::-webkit-slider-thumb:hover {
     transform: scale(1.4);
     background: #ffffff;
-    /* Pop out slightly on hover */
 }
 
-/* Button layout and styling */
 .navigation {
     display: flex;
     align-items: center;
@@ -264,7 +243,6 @@ h3 {
     text-shadow: 0 0 15lpx rgba(0, 242, 254, 0.6);
 }
 
-/* Make the play/pause button stand out */
 .action-btn-big {
     color: #ffffff;
     font-size: 35px;
@@ -455,7 +433,111 @@ h3 {
     font-style: italic;
 }
 
-/* ===================== Source Tabs ===================== */
+/* ===================== Auth Bar ===================== */
+.auth-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 24px;
+    background: rgba(10, 10, 20, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.auth-logged-out,
+.auth-logged-in {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.auth-hint {
+    color: #a0a0b5;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.auth-btn {
+    background: rgba(0, 242, 254, 0.1);
+    border: 1px solid rgba(0, 242, 254, 0.3);
+    color: #00f2fe;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.auth-btn:hover {
+    background: rgba(0, 242, 254, 0.2);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+    color: #fff;
+}
+
+.auth-btn-out {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #a0a0b5;
+}
+
+.auth-btn-out:hover {
+    background: rgba(255, 80, 80, 0.15);
+    border-color: rgba(255, 80, 80, 0.4);
+    color: #ff6b6b;
+    box-shadow: none;
+}
+
+.auth-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    object-fit: cover;
+}
+
+.auth-name {
+    color: #fff;
+    font-size: 12px;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.main-wrapper {
+    margin-top: 70px !important;
+}
+
+/* ===================== Playlist auth prompt ===================== */
+.playlist-auth-msg {
+    color: #666;
+    font-size: 13px;
+    text-align: center;
+    padding: 30px 10px;
+    font-style: italic;
+    line-height: 1.8;
+}
+
+.playlist-auth-msg i {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 8px;
+    color: #a0a0b5;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .source-tabs {
     position: relative;
     z-index: 20;
