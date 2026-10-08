@@ -13,6 +13,12 @@ test("travels between decades without interrupting playback", async ({ page }) =
 
   await page.getByRole("radio", { name: /2000s/i }).click();
   await expect(page.getByText("Crazy in Love")).toBeVisible();
+  await page.getByRole("button", { name: "Add to queue: Crazy in Love" }).click();
   await expect(page.getByRole("region", { name: "Music player" }).getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Music player" }).getByText("Stayin' Alive")).toBeVisible();
+
+  await page.evaluate(() => {
+    (window as unknown as { __daydreaminPlayers: Array<{ __end(): void }> }).__daydreaminPlayers[0].__end();
+  });
+  await expect(page.getByRole("region", { name: "Music player" }).getByText("Crazy in Love")).toBeVisible();
 });

@@ -83,4 +83,10 @@ describe("RecommendationTray", () => {
 
     expect(getEraRecommendations.mock.calls.at(-1)?.[0]).toBe("2000s");
   });
+
+  it("explains an empty recommendation response", async () => {
+    getEraRecommendations.mockResolvedValue({ items: [] });
+    renderTray();
+    expect(await screen.findByText(/no picks surfaced/i)).toBeInTheDocument();
+  });
 });

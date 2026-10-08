@@ -43,7 +43,22 @@ function fail(code: CatalogErrorCode, message: string, status = 400): Response {
 }
 
 function normalizeArtist(channelTitle = "Unknown artist"): string {
-  return channelTitle.replace(/\s+-\s+Topic$/i, "").trim() || "Unknown artist";
+  return decodeYouTubeText(channelTitle).replace(/\s+-\s+Topic$/i, "").trim() || "Unknown artist";
+}
+
+function decodeYouTubeText(value: string): string {
+  const named: Record<string, string> = {
+    amp: "&", apos: "'", gt: ">", lt: "<", quot: '"',
+  };
+  return value.replace(/&(#x[\da-f]+|#\d+|amp|apos|gt|lt|quot);/gi, (entity, code: string) => {
+    if (code[0] !== "#") return named[code.toLowerCase()] ?? entity;
+    const point = code[1]?.toLowerCase() === "x"
+      ? Number.parseInt(code.slice(2), 16)
+      : Number.parseInt(code.slice(1), 10);
+    return Number.isFinite(point) && point >= 0 && point <= 0x10ffff
+      ? String.fromCodePoint(point)
+      : entity;
+  });
 }
 
 function bestThumbnail(thumbnails: YouTubeSearchItem["snippet"] extends infer _ ? Record<string, { url?: string }> | undefined : never): string {
@@ -63,7 +78,7 @@ function normalizeItem(item: YouTubeSearchItem): Track | null {
   return {
     id,
     provider: "youtube",
-    title: snippet.title,
+    title: decodeYouTubeText(snippet.title),
     artist: normalizeArtist(snippet.channelTitle),
     artwork: bestThumbnail(snippet.thumbnails),
     ...(snippet.publishedAt ? { publishedAt: snippet.publishedAt } : {}),
@@ -110,6 +125,14 @@ export async function handleCatalogRequest(
       return fail("invalid_era", "Choose a supported decade.");
     }
     query = recommendationQuery(era as EraId);
+  }
+
+  if (env.CATALOG_RATE_LIMITER) {
+    const suppliedSession = request.headers.get("x-daydreamin-session") ?? "";
+    const session = /^[\w-]{16,80}$/.test(suppliedSession) ? suppliedSession : "anonymous";
+    const network = request.headers.get("cf-connecting-ip");
+    const { success } = await env.CATALOG_RATE_LIMITER.limit({ key: network || session });
+    if (!success) return fail("rate_limited", "Too many requests. Try again shortly.", 429);
   }
 
   const key = env.YOUTUBE_API_KEY?.trim();

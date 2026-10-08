@@ -24,6 +24,7 @@ function messageFor(error: unknown): string {
   const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
   if (code === "offline") return "You appear to be offline. Check your connection and try again.";
   if (code === "quota_exceeded") return "The search limit is resting. Try again a little later.";
+  if (code === "rate_limited") return "Too many searches at once. Pause for a moment and try again.";
   return "Search is temporarily unavailable.";
 }
 
@@ -137,7 +138,6 @@ export function SearchOverlay({
                   onChange={(event) => { setQuery(event.target.value); setActiveIndex(-1); }}
                   placeholder="Song, artist, or mood"
                   aria-label="Search any song"
-                  aria-activedescendant={activeIndex >= 0 ? `search-result-${activeIndex}` : undefined}
                 />
               </div>
               <button className={styles.close} type="button" onClick={close} aria-label="Close search"><X /></button>
@@ -155,13 +155,14 @@ export function SearchOverlay({
               {debouncedQuery && search.isPending && <p className={styles.state} role="status">Searching the airwaves…</p>}
               {search.error && <p className={styles.state} role="alert">{messageFor(search.error)}</p>}
               {search.data && search.data.items.length === 0 && <p className={styles.state}>No songs found. Try another title or artist.</p>}
-              <div className={styles.results} role="listbox" aria-label="Search results">
+              <p className={styles.srOnly} aria-live="polite">
+                {activeIndex >= 0 && items[activeIndex] ? `${items[activeIndex].title} selected` : ""}
+              </p>
+              <div className={styles.results} aria-label="Search results">
                 {items.map((track, index) => (
                   <div
                     id={`search-result-${index}`}
                     key={`${track.provider}:${track.id}`}
-                    role="option"
-                    aria-selected={index === activeIndex}
                     data-active={String(index === activeIndex)}
                   >
                     <TrackRow

@@ -70,6 +70,8 @@ describe("SearchOverlay", () => {
     fireEvent.change(input, { target: { value: "Midnight" } });
     await waitFor(() => expect(searchCatalog).toHaveBeenCalled());
     expect(await screen.findByText(song.title)).toBeInTheDocument();
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
 
     fireEvent.keyDown(input, { key: "ArrowDown" });
     fireEvent.keyDown(input, { key: "Enter" });

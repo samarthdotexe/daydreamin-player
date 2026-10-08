@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -39,5 +39,24 @@ describe("LibrarySheet", () => {
 
     await user.click(screen.getByRole("button", { name: "Remove Saved Song" }));
     expect(library.remove).toHaveBeenCalledWith("u1", "youtube:one");
+  });
+
+  it("moves focus into the modal and restores it when closed", async () => {
+    const user = userEvent.setup();
+    const trigger = document.createElement("button");
+    const root = document.createElement("div");
+    root.id = "root";
+    document.body.append(root);
+    trigger.textContent = "Open library";
+    document.body.append(trigger);
+    trigger.focus();
+    const onClose = vi.fn();
+    render(<LibrarySheet open user={null} repository={repository()} onClose={onClose} />);
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Close library" })).toHaveFocus());
+    expect(document.getElementById("root")).toHaveProperty("inert", true);
+    await user.click(screen.getByRole("button", { name: "Close library" }));
+    await waitFor(() => expect(trigger).toHaveFocus());
+    expect(onClose).toHaveBeenCalledOnce();
   });
 });

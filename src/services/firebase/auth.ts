@@ -26,12 +26,14 @@ export const firebaseAuthService: AuthService = {
   subscribe(listener) {
     let stopped = false;
     let unsubscribe: () => void = () => undefined;
-    void Promise.all([getFirebaseApp(), import("firebase/auth")]).then(([app, authSdk]) => {
+    void getFirebaseApp().then(async (app) => {
       if (stopped) return;
       if (!app) {
         listener(null);
         return;
       }
+      const authSdk = await import("firebase/auth");
+      if (stopped) return;
       unsubscribe = authSdk.onAuthStateChanged(
         authSdk.getAuth(app),
         (user) => listener(user ? mapUser(user) : null),

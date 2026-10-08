@@ -69,6 +69,7 @@ export class YouTubePlayerAdapter implements PlayerAdapter {
   private commandQueue: Array<() => void> = [];
   private progressTimer: number | null = null;
   private unavailableReported = false;
+  private playing = false;
   private readonly loadApi: () => Promise<YT.Namespace>;
 
   constructor(
@@ -96,6 +97,7 @@ export class YouTubePlayerAdapter implements PlayerAdapter {
         },
         onStateChange: ({ data }) => {
           const status = mapYouTubeState(data);
+          this.playing = status === "playing";
           this.emit({ type: "status", status });
           if (status === "playing" && !document.hidden) this.startProgress();
           else this.stopProgress();
@@ -146,6 +148,7 @@ export class YouTubePlayerAdapter implements PlayerAdapter {
 
   private handleVisibility = () => {
     if (document.hidden) this.stopProgress();
+    else if (this.playing) this.startProgress();
   };
 
   destroy(): void {

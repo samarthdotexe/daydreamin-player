@@ -4,6 +4,8 @@
   gap: 0.35rem;
   width: min(12rem, 20vw);
   padding: 1rem 0;
+  touch-action: none;
+  user-select: none;
 }
 
 .rail {

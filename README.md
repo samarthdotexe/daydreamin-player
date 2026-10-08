@@ -36,9 +36,10 @@ Unit/component tests mock all providers. Playwright intercepts catalog and IFram
 
 1. Deploy the Vite output (`dist`) and `functions` directory to Cloudflare Pages.
 2. Add `YOUTUBE_API_KEY` as an encrypted Pages secret.
-3. Add the six `VITE_FIREBASE_*` variables at build time when authentication is enabled.
-4. Add the production domain to Firebase Authentication's authorized domains.
-5. Deploy `firestore.rules` before enabling saved tracks.
-6. Rotate any credential that was ever committed or shipped to a client bundle.
+3. Keep the `CATALOG_RATE_LIMITER` binding in `wrangler.toml`; it limits each network to 60 catalog requests per minute, with a per-session fallback outside Cloudflare. Use a distinct positive `namespace_id` if this project shares an account with another rate limiter.
+4. Add the six `VITE_FIREBASE_*` variables at build time when authentication is enabled.
+5. Add the production domain to Firebase Authentication's authorized domains.
+6. Deploy `firestore.rules` before enabling saved tracks.
+7. Rotate any credential that was ever committed or shipped to a client bundle.
 
 The catalog endpoint accepts only bounded searches/recommendation requests, maps provider failures to safe error codes, and never returns raw upstream errors or credentials. YouTube playback uses a visible official embed that meets the provider's minimum viewport requirement.

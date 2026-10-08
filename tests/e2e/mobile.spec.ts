@@ -17,13 +17,15 @@ test("mobile search and now-playing remain fully reachable", async ({ page }) =>
   await page.getByRole("button", { name: "Close search" }).click();
   await expect(page.getByRole("dialog", { name: "Search music" })).toBeHidden();
 
-  const expand = page.getByRole("button", { name: "Expand player" });
-  await expand.click();
+  const expand = page.getByRole("region", { name: "Music player" }).locator("button[aria-expanded]");
   await expect(expand).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("region", { name: "YouTube video player" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Previous track" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Next track" })).toBeVisible();
   await expect(page.getByRole("slider", { name: "Seek" })).toBeVisible();
   await expect(page.getByRole("slider", { name: "Volume" })).toBeVisible();
   await expand.click();
   await expect(expand).toHaveAttribute("aria-expanded", "false");
+  await expect(expand).toHaveAccessibleName("Expand player");
+  await expect(page.getByRole("region", { name: "Music player" }).getByRole("button", { name: "Play", exact: true })).toBeVisible();
 });

@@ -1,6 +1,7 @@
 import { BookmarkX, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import type { AuthUser } from "../../services/firebase/auth";
 import { firebaseLibraryRepository, type LibraryRepository } from "../../services/firebase/library";
@@ -19,11 +20,25 @@ interface LibrarySheetProps {
 export function LibrarySheet({ open, user, requestedTrack, repository = firebaseLibraryRepository, onClose }: LibrarySheetProps) {
   const reduceMotion = useReducedMotion();
   const sheetRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [error, setError] = useState("");
   const playNow = usePlayerStore((state) => state.playNow);
 
   useEffect(() => repository.subscribe(user?.id ?? "", setTracks), [repository, user?.id]);
+
+  useEffect(() => {
+    if (!open) return;
+    returnFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const appRoot = document.getElementById("root");
+    if (appRoot) appRoot.inert = true;
+    const timer = window.setTimeout(() => closeRef.current?.focus(), 0);
+    return () => {
+      window.clearTimeout(timer);
+      if (appRoot) appRoot.inert = false;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!user || !requestedTrack) return;
@@ -37,9 +52,14 @@ export function LibrarySheet({ open, user, requestedTrack, repository = firebase
     catch { setError("This track could not be removed."); }
   }
 
+  function close() {
+    onClose();
+    window.setTimeout(() => returnFocusRef.current?.focus(), 0);
+  }
+
   function trapFocus(event: React.KeyboardEvent) {
     if (event.key === "Escape") {
-      onClose();
+      close();
       return;
     }
     if (event.key !== "Tab" || !sheetRef.current) return;
@@ -55,10 +75,10 @@ export function LibrarySheet({ open, user, requestedTrack, repository = firebase
     }
   }
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
-        <motion.div className={styles.backdrop} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div className={styles.backdrop} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) close(); }}>
           <motion.aside
             ref={sheetRef}
             className={styles.sheet}
@@ -71,7 +91,7 @@ export function LibrarySheet({ open, user, requestedTrack, repository = firebase
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 28 }}
             transition={{ type: "spring", stiffness: 290, damping: 30 }}
           >
-            <header><div><p>Your collection</p><h2>Saved daydreams</h2></div><button type="button" onClick={onClose} aria-label="Close library"><X /></button></header>
+            <header><div><p>Your collection</p><h2>Saved daydreams</h2></div><button ref={closeRef} type="button" onClick={close} aria-label="Close library"><X /></button></header>
             {!user ? (
               <div className={styles.empty}><h3>Sign in to save this track</h3><p>Your music keeps playing while you decide. An account is only needed for cloud saves.</p></div>
             ) : tracks.length === 0 ? (
@@ -83,6 +103,7 @@ export function LibrarySheet({ open, user, requestedTrack, repository = firebase
           </motion.aside>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

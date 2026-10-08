@@ -12,6 +12,7 @@ export type CatalogErrorCode =
   | "invalid_era"
   | "invalid_limit"
   | "misconfigured"
+  | "rate_limited"
   | "quota_exceeded"
   | "upstream_unavailable";
 
@@ -29,4 +30,7 @@ export interface CatalogProvider {
 
 export interface CatalogEnvironment {
   YOUTUBE_API_KEY?: string;
+  CATALOG_RATE_LIMITER?: {
+    limit(options: { key: string }): Promise<{ success: boolean }>;
+  };
 }

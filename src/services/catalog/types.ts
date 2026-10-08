@@ -14,6 +14,7 @@ export type CatalogErrorCode =
   | "invalid_era"
   | "invalid_limit"
   | "misconfigured"
+  | "rate_limited"
   | "quota_exceeded"
   | "upstream_unavailable";
 

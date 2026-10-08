@@ -25,6 +25,7 @@ export interface CatalogClient extends CatalogProvider {
 
 export function createCatalogClient(fetcher: Fetcher = fetch): CatalogClient {
   const cache = new Map<string, CatalogPage>();
+  const sessionId = globalThis.crypto?.randomUUID?.() ?? `session-${Date.now()}-${Math.random()}`;
 
   async function request(
     key: string,
@@ -32,7 +33,10 @@ export function createCatalogClient(fetcher: Fetcher = fetch): CatalogClient {
     signal?: AbortSignal,
   ): Promise<CatalogPage> {
     try {
-      const response = await fetcher(url, { signal, headers: { accept: "application/json" } });
+      const response = await fetcher(url, {
+        signal,
+        headers: { accept: "application/json", "x-daydreamin-session": sessionId },
+      });
       const body = await response.json() as CatalogPage | GatewayErrorBody;
       if (!response.ok) {
         const error = (body as GatewayErrorBody).error;

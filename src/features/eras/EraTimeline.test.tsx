@@ -58,6 +58,22 @@ describe("EraTimeline", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2000s selected");
   });
 
+  it("previews and settles on a decade when dragged", () => {
+    render(<EraTimeline />);
+    const timeline = screen.getByRole("radiogroup", { name: "Choose a decade" });
+    vi.spyOn(timeline, "getBoundingClientRect").mockReturnValue({
+      x: 0, y: 0, top: 0, left: 0, right: 400, bottom: 80, width: 400, height: 80,
+      toJSON: () => ({}),
+    });
+
+    fireEvent.pointerDown(timeline, { pointerId: 1, button: 0, clientX: 5, clientY: 20 });
+    fireEvent.pointerMove(timeline, { pointerId: 1, clientX: 390, clientY: 20 });
+    expect(screen.getByRole("radio", { name: /2020s/i })).toHaveAttribute("aria-checked", "true");
+    fireEvent.pointerUp(timeline, { pointerId: 1, clientX: 390, clientY: 20 });
+
+    expect(useEraStore.getState().activeEra).toBe("2020s");
+  });
+
   it("supports Arrow, Home, and End keyboard navigation", () => {
     render(<EraTimeline />);
     const first = screen.getByRole("radio", { name: /1940s/i });

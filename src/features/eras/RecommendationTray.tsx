@@ -12,6 +12,7 @@ function errorMessage(error: unknown): string {
   const code = typeof error === "object" && error && "code" in error ? String(error.code) : "";
   if (code === "quota_exceeded") return "The search limit is resting. Your previous picks are still here.";
   if (code === "offline") return "You appear to be offline. Your previous picks are still here.";
+  if (code === "rate_limited") return "Too many requests at once. Pause for a moment and try again.";
   return "Recommendations could not be refreshed.";
 }
 
@@ -51,6 +52,10 @@ export function RecommendationTray({ onSave }: RecommendationTrayProps = {}) {
         <div className={styles.skeletons} aria-label="Loading recommendations">
           <i /><i /><i />
         </div>
+      ) : null}
+
+      {query.data && query.data.items.length === 0 && !query.error ? (
+        <p className={styles.empty}>No picks surfaced for this decade yet. Try another era or search any song.</p>
       ) : null}
 
       <AnimatePresence mode="popLayout" initial={false}>

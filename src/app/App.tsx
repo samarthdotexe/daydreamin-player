@@ -68,7 +68,7 @@ function Experience(): JSX.Element {
 
       <RecommendationTray onSave={saveTrack} />
       <section aria-label="Music player" className={styles.playerRegion}>
-        <PlayerDock />
+        <PlayerDock onSave={saveTrack} />
       </section>
       <SearchOverlay
         open={searchOpen}

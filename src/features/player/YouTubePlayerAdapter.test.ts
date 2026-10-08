@@ -94,6 +94,35 @@ describe("YouTubePlayerAdapter", () => {
     expect(listener.mock.calls.length).toBe(progressCount + 1);
   });
 
+  it("resumes progress polling when a playing document becomes visible again", async () => {
+    let hidden = false;
+    vi.spyOn(document, "hidden", "get").mockImplementation(() => hidden);
+    const player = fakePlayer();
+    let events!: YT.PlayerEvents;
+    const listener = vi.fn();
+    const adapter = new YouTubePlayerAdapter("player", listener, {
+      loadApi: async () => ({
+        Player: vi.fn(function (_id: string, options: YT.PlayerOptions) {
+          events = options.events;
+          return player;
+        }) as unknown as typeof YT.Player,
+      }),
+    });
+    await adapter.mount();
+    events.onReady({ target: player as unknown as YT.Player });
+    events.onStateChange({ data: 1, target: player as unknown as YT.Player });
+    hidden = true;
+    document.dispatchEvent(new Event("visibilitychange"));
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(listener.mock.calls.filter(([event]) => event.type === "progress")).toHaveLength(0);
+
+    hidden = false;
+    document.dispatchEvent(new Event("visibilitychange"));
+    await vi.advanceTimersByTimeAsync(500);
+    expect(listener).toHaveBeenCalledWith({ type: "progress", currentTime: 12, duration: 180 });
+    adapter.destroy();
+  });
+
   it("reports one unavailable error and tears down timers and listeners", async () => {
     const player = fakePlayer();
     let events!: YT.PlayerEvents;

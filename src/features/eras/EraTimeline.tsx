@@ -1,5 +1,5 @@
 import { LayoutGroup, motion, useReducedMotion } from "motion/react";
-import type { KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 
 import { ERAS } from "./eras";
 import { useEraStore } from "./eraStore";
@@ -11,6 +11,45 @@ export function EraTimeline() {
   const setEra = useEraStore((state) => state.setEra);
   const stepEra = useEraStore((state) => state.stepEra);
   const reduceMotion = useReducedMotion();
+  const [previewEra, setPreviewEra] = useState<EraId | null>(null);
+  const dragging = useRef(false);
+  const moved = useRef(false);
+  const ignoreClick = useRef(false);
+  const displayedEra = previewEra ?? activeEra;
+
+  const eraAtPointer = (event: PointerEvent<HTMLDivElement>): EraId => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const horizontal = rect.width >= rect.height;
+    const position = horizontal
+      ? (event.clientX - rect.left) / Math.max(rect.width, 1)
+      : (event.clientY - rect.top) / Math.max(rect.height, 1);
+    const index = Math.round(Math.min(1, Math.max(0, position)) * (ERAS.length - 1));
+    return ERAS[index].id;
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    dragging.current = true;
+    moved.current = false;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setPreviewEra(eraAtPointer(event));
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragging.current) return;
+    moved.current = true;
+    setPreviewEra(eraAtPointer(event));
+  };
+
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragging.current) return;
+    const era = eraAtPointer(event);
+    dragging.current = false;
+    ignoreClick.current = moved.current;
+    setPreviewEra(null);
+    setEra(era);
+    window.setTimeout(() => { ignoreClick.current = false; }, 0);
+  };
 
   const focusEra = (id: EraId) => {
     requestAnimationFrame(() => {
@@ -51,10 +90,15 @@ export function EraTimeline() {
         role="radiogroup"
         aria-label="Choose a decade"
         data-reduced-motion={String(Boolean(reduceMotion))}
+        data-dragging={String(previewEra !== null)}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => { dragging.current = false; setPreviewEra(null); }}
       >
         <div className={styles.rail} aria-hidden="true" />
         {ERAS.map((era) => {
-          const selected = era.id === activeEra;
+          const selected = era.id === displayedEra;
           return (
             <button
               className={styles.option}
@@ -64,7 +108,7 @@ export function EraTimeline() {
               tabIndex={selected ? 0 : -1}
               data-era-id={era.id}
               key={era.id}
-              onClick={() => setEra(era.id)}
+              onClick={() => { if (!ignoreClick.current) setEra(era.id); }}
               onKeyDown={handleKeyDown}
             >
               {selected ? (

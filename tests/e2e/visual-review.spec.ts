@@ -32,5 +32,6 @@ test("captures every era and the primary motion states", async ({ page }, testIn
   await page.screenshot({ path: testInfo.outputPath("track-playing.png"), fullPage: true });
 
   await page.setViewportSize({ width: 320, height: 700 });
+  await expect(page.getByRole("region", { name: "YouTube video player" })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("mobile-320.png"), fullPage: true });
 });

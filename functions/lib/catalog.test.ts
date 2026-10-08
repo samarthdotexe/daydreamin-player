@@ -27,6 +27,21 @@ describe("catalog gateway validation", () => {
 });
 
 describe("catalog gateway responses", () => {
+  it("returns 429 before contacting YouTube when the rate limit is exhausted", async () => {
+    const fetcher = vi.fn();
+    const limit = vi.fn().mockResolvedValue({ success: false });
+    const response = await handleCatalogRequest(
+      new Request(request().url, { headers: { "x-daydreamin-session": "1234567890abcdef", "cf-connecting-ip": "203.0.113.10" } }),
+      { ...env, CATALOG_RATE_LIMITER: { limit } },
+      fetcher,
+    );
+
+    expect(response.status).toBe(429);
+    expect(await response.json()).toMatchObject({ error: { code: "rate_limited" } });
+    expect(limit).toHaveBeenCalledWith({ key: "203.0.113.10" });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("normalizes YouTube search results and emits cache policy", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       Response.json({
@@ -60,6 +75,17 @@ describe("catalog gateway responses", () => {
       nextCursor: "NEXT",
     });
     expect(String(fetcher.mock.calls[0][0])).toContain("maxResults=8");
+  });
+
+  it("decodes escaped YouTube metadata", async () => {
+    const fetcher = vi.fn().mockResolvedValue(Response.json({ items: [{
+      id: { videoId: "escaped" },
+      snippet: { title: "Rock &amp; Roll &#39;Forever&#39;", channelTitle: "A &amp; B - Topic" },
+    }] }));
+    const response = await handleCatalogRequest(request(), env, fetcher);
+    expect(await response.json()).toMatchObject({
+      items: [{ title: "Rock & Roll 'Forever'", artist: "A & B" }],
+    });
   });
 
   it("maps quota failures without exposing the credential or upstream body", async () => {
