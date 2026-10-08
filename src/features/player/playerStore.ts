@@ -9,6 +9,8 @@ interface PlayerState {
   status: PlaybackStatus;
   currentTime: number;
   duration: number;
+  volume: number;
+  error: string | null;
   shuffle: boolean;
   repeat: RepeatMode;
   playNow: (track: Track) => void;
@@ -22,6 +24,8 @@ interface PlayerState {
   cycleRepeat: () => void;
   setStatus: (status: PlaybackStatus) => void;
   setProgress: (currentTime: number, duration: number) => void;
+  setVolume: (volume: number) => void;
+  setError: (error: string | null) => void;
 }
 
 const repeatOrder: readonly RepeatMode[] = ["off", "all", "one"];
@@ -45,6 +49,8 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   status: "idle",
   currentTime: 0,
   duration: 0,
+  volume: 80,
+  error: null,
   shuffle: false,
   repeat: "off",
 
@@ -57,6 +63,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
         status: "loading",
         currentTime: 0,
         duration: 0,
+        error: null,
       };
     }),
 
@@ -105,6 +112,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
           status: "idle",
           currentTime: 0,
           duration: 0,
+          error: null,
         };
       }
 
@@ -128,6 +136,7 @@ export const usePlayerStore = create<PlayerState>((set) => ({
         status: "loading",
         currentTime: 0,
         duration: 0,
+        error: null,
       };
     }),
 
@@ -202,6 +211,10 @@ export const usePlayerStore = create<PlayerState>((set) => ({
       currentTime: Number.isFinite(currentTime) ? Math.max(0, currentTime) : 0,
       duration: Number.isFinite(duration) ? Math.max(0, duration) : 0,
     }),
+
+  setVolume: (volume) => set({ volume: Math.min(100, Math.max(0, volume)) }),
+
+  setError: (error) => set({ error, ...(error ? { status: "error" as const } : {}) }),
 }));
 
 export type { PlayerState };

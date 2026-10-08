@@ -5,6 +5,7 @@ import { EraScene } from "../features/eras/EraScene";
 import { EraTimeline } from "../features/eras/EraTimeline";
 import { RecommendationTray } from "../features/eras/RecommendationTray";
 import { SearchOverlay } from "../features/search/SearchOverlay";
+import { PlayerDock } from "../features/player/PlayerDock";
 import { QueryProvider } from "./QueryProvider";
 import styles from "./App.module.css";
 
@@ -38,7 +39,9 @@ function Experience(): JSX.Element {
       </nav>
 
       <RecommendationTray />
-      <section aria-label="Music player" className={styles.playerRegion} />
+      <section aria-label="Music player" className={styles.playerRegion}>
+        <PlayerDock />
+      </section>
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
