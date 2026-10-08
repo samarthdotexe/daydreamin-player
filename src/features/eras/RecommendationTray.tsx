@@ -15,7 +15,9 @@ function errorMessage(error: unknown): string {
   return "Recommendations could not be refreshed.";
 }
 
-export function RecommendationTray() {
+interface RecommendationTrayProps { onSave?: (track: Track) => void; }
+
+export function RecommendationTray({ onSave }: RecommendationTrayProps = {}) {
   const era = useEraStore((state) => state.activeEra);
   const playNow = usePlayerStore((state) => state.playNow);
   const playNext = usePlayerStore((state) => state.playNext);
@@ -26,7 +28,7 @@ export function RecommendationTray() {
     placeholderData: keepPreviousData,
   });
 
-  const saveLater = (_track: Track) => undefined;
+  const saveLater = onSave ?? ((_track: Track) => undefined);
 
   return (
     <aside className={styles.tray} aria-label={`${era} recommendations`}>
