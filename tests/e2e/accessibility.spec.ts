@@ -15,7 +15,6 @@ test("supports zoomed keyboard use, accessibility, and reduced motion", async ({
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  await page.keyboard.press("Tab");
   await expect(page.getByRole("radio", { name: /1940s/i })).toBeFocused();
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("radio", { name: /1970s/i })).toHaveAttribute("aria-checked", "true");
