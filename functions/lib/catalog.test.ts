@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { handleCatalogRequest } from "./catalog";
 
-const env = { YOUTUBE_API_KEY: "AIza-test-secret-never-return" };
+const env = { YOUTUBE_API_KEY: "test-secret-never-return" };
 
 function request(params = "mode=search&q=blue+moon&limit=8") {
   return new Request(`https://daydreamin.test/api/catalog?${params}`);
