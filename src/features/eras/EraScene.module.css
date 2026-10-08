@@ -1,0 +1,101 @@
+.scene {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--era-background);
+  color: var(--era-ink);
+  transition: background-color 360ms ease;
+}
+
+.backdrop,
+.scrim {
+  position: absolute;
+  inset: 0;
+}
+
+.backdrop {
+  z-index: -2;
+  background-position: center;
+  background-size: cover;
+  will-change: transform, opacity;
+}
+
+.scrim {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.46), transparent 58%),
+    linear-gradient(0deg, rgb(0 0 0 / 0.5), transparent 36%),
+    url("/assets/texture/noise.webp");
+  background-size: auto, auto, 128px 128px;
+  background-blend-mode: normal, normal, soft-light;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.copy {
+  position: absolute;
+  top: clamp(7rem, 17vh, 11rem);
+  left: clamp(1.5rem, 5vw, 5rem);
+  width: min(23rem, 35vw);
+  text-shadow: 0 0.2rem 2rem rgb(0 0 0 / 0.55);
+}
+
+.kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.year {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4.7rem, 12vw, 11rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.075em;
+  opacity: 0.76;
+}
+
+.tagline {
+  max-width: 19rem;
+  margin: 1rem 0 0;
+  color: var(--era-muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .backdrop {
+    background-position: 46% center;
+  }
+
+  .copy {
+    top: 6.5rem;
+    left: 1.25rem;
+    width: calc(100% - 2.5rem);
+  }
+
+  .year {
+    font-size: clamp(4.4rem, 25vw, 7rem);
+  }
+
+  .tagline {
+    max-width: 16rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    transition-duration: 120ms;
+  }
+
+  .backdrop {
+    will-change: opacity;
+  }
+}
