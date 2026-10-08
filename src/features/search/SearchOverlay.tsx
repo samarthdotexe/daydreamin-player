@@ -38,6 +38,7 @@ export function SearchOverlay({
 }: SearchOverlayProps) {
   const reduceMotion = useReducedMotion();
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -85,6 +86,21 @@ export function SearchOverlay({
     } else if (event.key === "Enter" && activeIndex >= 0 && items[activeIndex]) {
       event.preventDefault();
       choose(items[activeIndex]);
+    } else if (event.key === "Tab" && dialogRef.current) {
+      const focusable = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (event.shiftKey && document.activeElement === first && last) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last && first) {
+        event.preventDefault();
+        first.focus();
+      }
     }
   }
 
@@ -100,6 +116,7 @@ export function SearchOverlay({
           onMouseDown={(event) => { if (event.target === event.currentTarget) close(); }}
         >
           <motion.section
+            ref={dialogRef}
             className={styles.dialog}
             role="dialog"
             aria-modal="true"

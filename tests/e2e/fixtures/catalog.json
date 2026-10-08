@@ -1,0 +1,7 @@
+{
+  "1940s": [{ "id": "jazz-1946", "provider": "youtube", "title": "Moonlight Serenade", "artist": "Glenn Miller", "artwork": "/assets/eras/1940s-scene.webp" }],
+  "1970s": [{ "id": "disco-1977", "provider": "youtube", "title": "Stayin' Alive", "artist": "Bee Gees", "artwork": "/assets/eras/1970s-scene.webp" }],
+  "2000s": [{ "id": "pop-2004", "provider": "youtube", "title": "Crazy in Love", "artist": "Beyoncé", "artwork": "/assets/eras/2000s-scene.webp" }],
+  "2020s": [{ "id": "now-2026", "provider": "youtube", "title": "Modern Love", "artist": "The Future", "artwork": "/assets/eras/2020s-scene.webp" }],
+  "search": [{ "id": "search-1", "provider": "youtube", "title": "Midnight City", "artist": "M83", "artwork": "/assets/eras/2000s-scene.webp" }]
+}

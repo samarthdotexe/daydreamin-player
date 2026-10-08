@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import type { CSSProperties } from "react";
+import { useEffect, type CSSProperties } from "react";
 
-import { getEra } from "./eras";
+import { getAdjacentEra, getEra } from "./eras";
 import { useEraStore } from "./eraStore";
 import { Turntable } from "../player/Turntable";
 import { usePlayerStore } from "../player/playerStore";
@@ -24,6 +24,17 @@ export function EraScene() {
   const status = usePlayerStore((state) => state.status);
   const setStatus = usePlayerStore((state) => state.setStatus);
   const palette = era.palette;
+
+  useEffect(() => {
+    const adjacent = [-1, 1] as const;
+    adjacent.forEach((direction) => {
+      const adjacentEra = getEra(getAdjacentEra(activeEra, direction));
+      if (adjacentEra.id !== activeEra) {
+        const image = new Image();
+        image.src = adjacentEra.sceneUrl;
+      }
+    });
+  }, [activeEra]);
   const style: EraStyle = {
     "--era-background": palette.background,
     "--era-surface": palette.surface,

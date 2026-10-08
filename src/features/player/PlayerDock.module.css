@@ -1,6 +1,7 @@
 .dock { position: fixed; z-index: 12; right: clamp(1rem, 3vw, 2.5rem); bottom: 1.2rem; left: clamp(1rem, 3vw, 2.5rem); display: grid; grid-template-columns: minmax(12rem, 1.2fr) auto minmax(10rem, 1fr) auto; align-items: center; gap: 1rem; min-height: 4.8rem; padding: 0.65rem 0.85rem; border: 1px solid rgb(255 255 255 / 0.16); border-radius: 1.4rem; background: rgb(12 13 14 / 0.7); box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 255 255 / 0.1); color: #faf8f2; backdrop-filter: blur(28px) saturate(130%); }
 .videoSurface { position: absolute; right: 0; bottom: calc(100% + 0.75rem); display: block; width: min(30rem, 44vw); min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid rgb(255 255 255 / 0.14); border-radius: 1rem; background: #050505; box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.4); }
 .videoSurface > div { width: 100%; height: 100%; }
+.videoSurface[data-active="false"] { display: none; }
 .videoSurface iframe { width: 100%; height: 100%; border: 0; }
 .videoSurface p { position: absolute; inset: 0; display: grid; margin: 0; place-items: center; color: rgb(255 255 255 / 0.48); }
 .dock[data-expanded="true"] .videoSurface { display: block; }
@@ -28,6 +29,19 @@
   .transport button:first-child, .transport button:last-child, .progress, .volume { display: none; }
   .expand { display: grid !important; }.utilities { gap: 0; }
   .dock[data-expanded="true"] { padding-top: min(58vw, 18rem); }
-  .videoSurface, .dock[data-expanded="true"] .videoSurface { top: 0.65rem; right: 0.65rem; left: 0.65rem; bottom: auto; display: block; width: auto; min-height: 200px; aspect-ratio: 16 / 9; }
+  .dock[data-expanded="true"] .transport button,
+  .dock[data-expanded="true"] .progress,
+  .dock[data-expanded="true"] .volume { display: flex; }
+  .dock[data-expanded="true"] { grid-template-columns: minmax(0, 1fr) auto; }
+  .dock[data-expanded="true"] .trackInfo { grid-column: 1 / -1; }
+  .dock[data-expanded="true"] .transport { justify-self: center; }
+  .dock[data-expanded="true"] .progress { grid-column: 1 / -1; width: 100%; }
+  .dock[data-expanded="true"] .utilities { justify-self: end; }
+  .videoSurface[data-active="true"], .dock[data-expanded="true"] .videoSurface[data-active="true"] { top: 0.65rem; right: 0.65rem; left: 0.65rem; bottom: auto; display: block; width: auto; min-height: 200px; aspect-ratio: 16 / 9; }
   .dock:not([data-expanded="true"]) .videoSurface { visibility: hidden; height: 200px; pointer-events: none; }
+}
+
+@media (max-width: 360px) {
+  .dock { right: 0.5rem; bottom: var(--safe-bottom); left: 0.5rem; }
+  .dock[data-expanded="true"] { padding-top: 13.2rem; }
 }

@@ -46,7 +46,7 @@ export function YouTubePlayer({
   }, [externalAdapter, track]);
 
   return (
-    <div className={styles.videoSurface} role="region" aria-label="YouTube video player">
+    <div className={styles.videoSurface} role="region" aria-label="YouTube video player" data-active={String(Boolean(track))}>
       <div id={elementId} />
       {!track && <p>Choose a song to begin</p>}
     </div>

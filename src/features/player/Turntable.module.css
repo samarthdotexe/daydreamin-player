@@ -225,7 +225,7 @@
 @media (max-width: 760px) {
   .stage {
     top: 44%;
-    right: -12vw;
+    right: -4vw;
     width: min(92vw, 33rem);
     opacity: 0.94;
   }

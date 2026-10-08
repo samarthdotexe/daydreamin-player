@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { useCallback, useRef, useState, type JSX } from "react";
+import { useCallback, useEffect, useRef, useState, type JSX } from "react";
 
 import { EraScene } from "../features/eras/EraScene";
 import { EraTimeline } from "../features/eras/EraTimeline";
@@ -25,6 +25,17 @@ function Experience(): JSX.Element {
     setLibraryOpen(true);
   }, []);
 
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", openSearch);
+    return () => window.removeEventListener("keydown", openSearch);
+  }, []);
+
   return (
     <main className={styles.app}>
       <EraScene />
@@ -39,6 +50,7 @@ function Experience(): JSX.Element {
           className={styles.searchButton}
           type="button"
           onClick={() => setSearchOpen(true)}
+          aria-label="Search any song"
         >
           <Search size={17} />
           <span>Search any song</span>

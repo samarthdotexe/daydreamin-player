@@ -26,8 +26,7 @@
   background:
     linear-gradient(90deg, rgb(0 0 0 / 0.46), transparent 58%),
     linear-gradient(0deg, rgb(0 0 0 / 0.5), transparent 36%),
-    url("/assets/texture/noise.webp");
-  background-size: auto, auto, 128px 128px;
+    radial-gradient(circle at 40% 25%, rgb(255 255 255 / 0.04), transparent 42%);
   background-blend-mode: normal, normal, soft-light;
   opacity: 0.78;
   pointer-events: none;
@@ -86,7 +85,7 @@
   }
 
   .tagline {
-    max-width: 16rem;
+    display: none;
   }
 }
 

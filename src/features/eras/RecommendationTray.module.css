@@ -28,6 +28,6 @@
 .skeletons i { height: 3.6rem; border-radius: 0.75rem; background: linear-gradient(90deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.05)); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 @media (max-width: 760px) {
-  .tray { left: 1rem; right: 1rem; bottom: 6.6rem; width: auto; max-height: 25vh; padding: 0.75rem; }
+  .tray { left: 1rem; right: 1rem; bottom: 10.4rem; width: auto; max-height: 24vh; padding: 0.75rem; }
 }
 @media (prefers-reduced-motion: reduce) { .skeletons i { animation: none; } }
