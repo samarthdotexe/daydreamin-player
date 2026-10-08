@@ -3,6 +3,8 @@ import type { CSSProperties } from "react";
 
 import { getEra } from "./eras";
 import { useEraStore } from "./eraStore";
+import { Turntable } from "../player/Turntable";
+import { usePlayerStore } from "../player/playerStore";
 import styles from "./EraScene.module.css";
 
 type EraStyle = CSSProperties & {
@@ -19,6 +21,8 @@ export function EraScene() {
   const selectionVersion = useEraStore((state) => state.selectionVersion);
   const reduceMotion = useReducedMotion();
   const era = getEra(activeEra);
+  const status = usePlayerStore((state) => state.status);
+  const setStatus = usePlayerStore((state) => state.setStatus);
   const palette = era.palette;
   const style: EraStyle = {
     "--era-background": palette.background,
@@ -55,6 +59,11 @@ export function EraScene() {
         <p className={styles.year}>{era.displayYear}</p>
         <p className={styles.tagline}>{era.tagline}</p>
       </div>
+      <Turntable
+        era={era}
+        status={status}
+        onTogglePlayback={() => setStatus(status === "playing" ? "paused" : "playing")}
+      />
     </section>
   );
 }
