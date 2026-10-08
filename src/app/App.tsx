@@ -1,30 +1,53 @@
-import type { JSX } from "react";
+import { Search } from "lucide-react";
+import { useRef, useState, type JSX } from "react";
 
 import { EraScene } from "../features/eras/EraScene";
 import { EraTimeline } from "../features/eras/EraTimeline";
+import { RecommendationTray } from "../features/eras/RecommendationTray";
+import { SearchOverlay } from "../features/search/SearchOverlay";
+import { QueryProvider } from "./QueryProvider";
+import styles from "./App.module.css";
 
-export function App(): JSX.Element {
+function Experience(): JSX.Element {
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+
   return (
-    <main style={{ position: "relative", minHeight: "100svh", overflow: "hidden" }}>
+    <main className={styles.app}>
       <EraScene />
 
-      <header style={{ position: "relative", zIndex: 2, padding: "1.5rem" }}>
-        <p style={{ margin: 0, fontSize: "0.68rem", letterSpacing: "0.16em" }}>
-          A MUSIC TIME MACHINE
-        </p>
-        <h1 style={{ margin: "0.2rem 0 0", fontFamily: "Georgia, serif" }}>
-          Daydreamin&apos;
-        </h1>
+      <header className={styles.header}>
+        <div className={styles.brand}>
+          <p>A music time machine</p>
+          <h1>Daydreamin&apos;</h1>
+        </div>
+        <button
+          ref={searchButtonRef}
+          className={styles.searchButton}
+          type="button"
+          onClick={() => setSearchOpen(true)}
+        >
+          <Search size={17} />
+          <span>Search any song</span>
+          <kbd>⌘ K</kbd>
+        </button>
       </header>
 
-      <nav
-        aria-label="Decade navigation"
-        style={{ position: "absolute", zIndex: 2, right: "2rem", top: "50%", transform: "translateY(-50%)" }}
-      >
+      <nav aria-label="Decade navigation" className={styles.timeline}>
         <EraTimeline />
       </nav>
 
-      <section aria-label="Music player" style={{ position: "relative", zIndex: 2 }} />
+      <RecommendationTray />
+      <section aria-label="Music player" className={styles.playerRegion} />
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        returnFocusRef={searchButtonRef}
+      />
     </main>
   );
+}
+
+export function App(): JSX.Element {
+  return <QueryProvider><Experience /></QueryProvider>;
 }

@@ -1,0 +1,62 @@
+.row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: 0.45rem;
+  border: 1px solid transparent;
+  border-radius: 0.9rem;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.row:hover {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.07);
+}
+
+.artworkButton {
+  position: relative;
+  display: grid;
+  width: 3.25rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  place-items: center;
+  border: 0;
+  border-radius: 0.65rem;
+  background: rgb(255 255 255 / 0.1);
+  color: white;
+  cursor: pointer;
+}
+
+.artworkButton img { width: 100%; height: 100%; object-fit: cover; }
+.playGlyph { position: absolute; display: grid; inset: 0; place-items: center; background: rgb(0 0 0 / 0.42); opacity: 0; transition: opacity 160ms ease; }
+.artworkButton:hover .playGlyph, .artworkButton:focus-visible .playGlyph { opacity: 1; }
+
+.metadata { min-width: 0; }
+.metadata h3, .metadata p { overflow: hidden; margin: 0; text-overflow: ellipsis; white-space: nowrap; }
+.metadata h3 { color: inherit; font-size: 0.88rem; font-weight: 650; }
+.metadata p { margin-top: 0.16rem; color: color-mix(in srgb, currentColor 65%, transparent); font-size: 0.72rem; }
+
+.actions { display: flex; gap: 0.22rem; }
+.actions button {
+  display: grid;
+  width: 2rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.actions button:hover, .actions button:focus-visible { background: rgb(255 255 255 / 0.12); opacity: 1; }
+.actions button:focus-visible, .artworkButton:focus-visible { outline: 2px solid var(--era-glow, #fff); outline-offset: 2px; }
+
+@media (max-width: 520px) {
+  .row { grid-template-columns: 2.8rem minmax(0, 1fr) auto; gap: 0.55rem; }
+  .artworkButton { width: 2.8rem; }
+  .actions { gap: 0; }
+  .actions button { width: 1.9rem; }
+}

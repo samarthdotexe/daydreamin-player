@@ -1,0 +1,21 @@
+.backdrop { position: fixed; z-index: 20; inset: 0; display: grid; place-items: start center; padding: min(13vh, 7rem) 1rem 1rem; background: rgb(3 4 5 / 0.62); backdrop-filter: blur(14px); }
+.dialog { width: min(42rem, 100%); max-height: min(76vh, 43rem); overflow: hidden; border: 1px solid rgb(255 255 255 / 0.15); border-radius: 1.45rem; background: rgb(20 21 22 / 0.9); box-shadow: 0 2.5rem 7rem rgb(0 0 0 / 0.55); color: #f8f6ef; }
+.header { display: grid; grid-template-columns: 1fr auto; gap: 0.65rem; padding: 0.85rem; border-bottom: 1px solid rgb(255 255 255 / 0.09); }
+.searchField { display: flex; align-items: center; gap: 0.7rem; padding: 0 0.8rem; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 0.85rem; background: rgb(255 255 255 / 0.06); }
+.searchField input { width: 100%; padding: 0.82rem 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; }
+.searchField input::placeholder { color: rgb(255 255 255 / 0.45); }
+.close { display: grid; width: 2.8rem; place-items: center; border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; }
+.close:hover, .close:focus-visible { background: rgb(255 255 255 / 0.1); }
+.body { max-height: calc(min(76vh, 43rem) - 4.5rem); overflow: auto; padding: 0.75rem; }
+.recents { padding: 0.6rem; }
+.recents p { margin: 0 0 0.65rem; color: rgb(255 255 255 / 0.5); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.recents div { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.recents button { padding: 0.5rem 0.75rem; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 999px; background: rgb(255 255 255 / 0.06); color: inherit; cursor: pointer; }
+.state { margin: 0; padding: 2.7rem 1rem; color: rgb(255 255 255 / 0.62); text-align: center; }
+.results { display: grid; gap: 0.2rem; }
+.results [role="option"][data-active="true"] { border-radius: 0.9rem; outline: 2px solid color-mix(in srgb, var(--era-glow, white) 65%, transparent); }
+@media (max-width: 600px) {
+  .backdrop { place-items: end stretch; padding: 0; }
+  .dialog { width: 100%; max-height: 88svh; border-radius: 1.6rem 1.6rem 0 0; }
+  .body { max-height: calc(88svh - 4.5rem); padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
