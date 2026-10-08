@@ -51,6 +51,11 @@ describe("Turntable", () => {
     expect(onTogglePlayback).toHaveBeenCalledOnce();
   });
 
+  it("disables play until a track exists", () => {
+    render(<Turntable era={getEra("1940s")} status="idle" disabled onTogglePlayback={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Play" })).toBeDisabled();
+  });
+
   it("moves the tonearm between resting and playing states", () => {
     const { rerender } = render(
       <Turntable era={getEra("1970s")} status="paused" onTogglePlayback={vi.fn()} />,

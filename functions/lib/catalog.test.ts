@@ -42,6 +42,17 @@ describe("catalog gateway responses", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("normalizes a rate-limiter service failure", async () => {
+    const fetcher = vi.fn();
+    const response = await handleCatalogRequest(request(), {
+      ...env,
+      CATALOG_RATE_LIMITER: { limit: vi.fn().mockRejectedValue(new Error("binding unavailable")) },
+    }, fetcher);
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ error: { code: "upstream_unavailable" } });
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("normalizes YouTube search results and emits cache policy", async () => {
     const fetcher = vi.fn().mockResolvedValue(
       Response.json({

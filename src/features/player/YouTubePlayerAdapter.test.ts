@@ -63,6 +63,24 @@ describe("YouTubePlayerAdapter", () => {
     expect(player.playVideo).toHaveBeenCalledOnce();
   });
 
+  it("cues a track when autoplay is not intended", async () => {
+    const player = fakePlayer();
+    let events!: YT.PlayerEvents;
+    const adapter = new YouTubePlayerAdapter("player", vi.fn(), {
+      loadApi: async () => ({
+        Player: vi.fn(function (_id: string, options: YT.PlayerOptions) {
+          events = options.events;
+          return player;
+        }) as unknown as typeof YT.Player,
+      }),
+    });
+    await adapter.mount();
+    events.onReady({ target: player as unknown as YT.Player });
+    adapter.load("video-2", false);
+    expect(player.cueVideoById).toHaveBeenCalledWith("video-2");
+    expect(player.loadVideoById).not.toHaveBeenCalled();
+  });
+
   it.each([
     [-1, "idle"], [0, "ended"], [1, "playing"], [2, "paused"], [3, "loading"], [5, "ready"],
   ] as const)("maps provider state %s to %s", (providerState, expected) => {

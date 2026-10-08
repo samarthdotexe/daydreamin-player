@@ -6,7 +6,7 @@ export type PlayerEvent =
   | { type: "unavailable"; code: number };
 
 export interface PlayerAdapter {
-  load(videoId: string): void;
+  load(videoId: string, autoplay?: boolean): void;
   play(): void;
   pause(): void;
   seekTo(seconds: number): void;
@@ -119,9 +119,9 @@ export class YouTubePlayerAdapter implements PlayerAdapter {
     else this.commandQueue.push(invoke);
   }
 
-  load(videoId: string): void {
+  load(videoId: string, autoplay = true): void {
     this.unavailableReported = false;
-    this.run((player) => player.loadVideoById(videoId));
+    this.run((player) => autoplay ? player.loadVideoById(videoId) : player.cueVideoById(videoId));
   }
   play(): void { this.run((player) => player.playVideo()); }
   pause(): void { this.run((player) => player.pauseVideo()); }

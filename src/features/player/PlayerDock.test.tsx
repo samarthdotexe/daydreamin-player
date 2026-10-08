@@ -84,6 +84,30 @@ describe("PlayerDock", () => {
     expect(onSave).toHaveBeenCalledWith(first);
   });
 
+  it("stops playback when the current track is the final queue item", async () => {
+    const player = adapter();
+    usePlayerStore.setState({ queue: [first], currentIndex: 0, status: "playing" });
+    render(<PlayerDock player={player} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Show queue" }));
+    await user.click(screen.getByRole("button", { name: "Remove First Song from queue" }));
+
+    expect(player.pause).toHaveBeenCalled();
+    expect(usePlayerStore.getState()).toMatchObject({ queue: [], currentIndex: -1, status: "idle" });
+  });
+
+  it("cues rather than autoplays a replacement removed while paused", async () => {
+    const player = adapter();
+    render(<PlayerDock player={player} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Show queue" }));
+    await user.click(screen.getByRole("button", { name: "Remove First Song from queue" }));
+
+    expect(player.load).toHaveBeenLastCalledWith("two", false);
+    expect(player.play).not.toHaveBeenCalled();
+    expect(usePlayerStore.getState()).toMatchObject({ currentIndex: 0, status: "paused" });
+  });
+
   it("surfaces unavailable video recovery without mutating or auto-skipping the queue", async () => {
     const user = userEvent.setup();
     usePlayerStore.setState({ status: "error", error: "Track unavailable" });

@@ -11,6 +11,7 @@ import styles from "./PlayerDock.module.css";
 interface YouTubePlayerProps {
   track?: Track;
   externalAdapter?: PlayerAdapter;
+  autoplay?: boolean;
   onAdapter?: (adapter: PlayerAdapter) => void;
   onEvent?: (event: PlayerEvent) => void;
 }
@@ -18,12 +19,15 @@ interface YouTubePlayerProps {
 export function YouTubePlayer({
   track,
   externalAdapter,
+  autoplay = true,
   onAdapter,
   onEvent = () => undefined,
 }: YouTubePlayerProps) {
   const reactId = useId();
   const elementId = `youtube-player-${reactId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const ownedAdapter = useRef<PlayerAdapter | null>(null);
+  const autoplayRef = useRef(autoplay);
+  autoplayRef.current = autoplay;
 
   useEffect(() => {
     if (externalAdapter) {
@@ -42,7 +46,7 @@ export function YouTubePlayer({
 
   useEffect(() => {
     const adapter = externalAdapter ?? ownedAdapter.current;
-    if (track && adapter) adapter.load(track.id);
+    if (track && adapter) adapter.load(track.id, autoplayRef.current);
   }, [externalAdapter, track]);
 
   return (

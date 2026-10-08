@@ -131,8 +131,12 @@ export async function handleCatalogRequest(
     const suppliedSession = request.headers.get("x-daydreamin-session") ?? "";
     const session = /^[\w-]{16,80}$/.test(suppliedSession) ? suppliedSession : "anonymous";
     const network = request.headers.get("cf-connecting-ip");
-    const { success } = await env.CATALOG_RATE_LIMITER.limit({ key: network || session });
-    if (!success) return fail("rate_limited", "Too many requests. Try again shortly.", 429);
+    try {
+      const { success } = await env.CATALOG_RATE_LIMITER.limit({ key: network || session });
+      if (!success) return fail("rate_limited", "Too many requests. Try again shortly.", 429);
+    } catch {
+      return fail("upstream_unavailable", "The music catalog is temporarily unavailable.", 503);
+    }
   }
 
   const key = env.YOUTUBE_API_KEY?.trim();

@@ -23,6 +23,7 @@ export function EraScene() {
   const era = getEra(activeEra);
   const status = usePlayerStore((state) => state.status);
   const setStatus = usePlayerStore((state) => state.setStatus);
+  const hasTrack = usePlayerStore((state) => state.currentIndex >= 0 && state.queue.length > 0);
   const palette = era.palette;
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export function EraScene() {
       <Turntable
         era={era}
         status={status}
+        disabled={!hasTrack}
         onTogglePlayback={() => setStatus(status === "playing" ? "paused" : "playing")}
       />
     </section>

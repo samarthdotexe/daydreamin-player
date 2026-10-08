@@ -10,11 +10,12 @@ interface TurntableProps {
   era: EraDefinition;
   status: PlaybackStatus;
   onTogglePlayback: () => void;
+  disabled?: boolean;
 }
 
 const playingStates = new Set<PlaybackStatus>(["loading", "playing"]);
 
-export function Turntable({ era, status, onTogglePlayback }: TurntableProps) {
+export function Turntable({ era, status, onTogglePlayback, disabled = false }: TurntableProps) {
   const { reduce, allowContinuous } = useReducedMotionPolicy();
   const isPlaying = playingStates.has(status);
   const shouldSpin = isPlaying && allowContinuous;
@@ -73,6 +74,7 @@ export function Turntable({ era, status, onTogglePlayback }: TurntableProps) {
           onClick={onTogglePlayback}
           aria-label={isPlaying ? "Pause" : "Play"}
           aria-pressed={isPlaying}
+          disabled={disabled}
         >
           {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
         </button>

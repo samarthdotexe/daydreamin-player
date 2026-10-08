@@ -15,6 +15,8 @@ export function applyPlaybackEvent(event: PlayerEvent, adapter: PlayerAdapter | 
   const state = usePlayerStore.getState();
   if (event.type === "progress") state.setProgress(event.currentTime, event.duration);
   else if (event.type === "unavailable") state.setError("Track unavailable");
+  else if (state.queue.length === 0 || state.currentIndex < 0) state.setStatus("idle");
+  else if (event.status === "ready" && state.status === "paused") return;
   else if (event.status === "ended") {
     if (state.repeat === "one") {
       adapter?.seekTo(0);
@@ -81,6 +83,7 @@ export function PlayerDock({ player, onSave }: PlayerDockProps) {
   }, []);
 
   function togglePlayback() {
+    if (!track) return;
     if (isPlaying) {
       setStatus("paused");
     } else {
@@ -113,6 +116,12 @@ export function PlayerDock({ player, onSave }: PlayerDockProps) {
     setQueueOpen(true);
   }
 
+  function removeQueueItem(item: Track, index: number) {
+    const removingCurrent = index === usePlayerStore.getState().currentIndex;
+    if (removingCurrent && queue.length === 1) adapter?.pause();
+    removeFromQueue(getTrackKey(item));
+  }
+
   return (
     <motion.div
       className={styles.dock}
@@ -124,6 +133,7 @@ export function PlayerDock({ player, onSave }: PlayerDockProps) {
       <YouTubePlayer
         track={track}
         externalAdapter={player}
+        autoplay={status !== "paused" && status !== "idle"}
         onAdapter={setAdapter}
         onEvent={handlePlayerEvent}
       />
@@ -135,7 +145,7 @@ export function PlayerDock({ player, onSave }: PlayerDockProps) {
 
       <div className={styles.transport}>
         <button type="button" onClick={goPrevious} aria-label="Previous track"><SkipBack /></button>
-        <button className={styles.primary} type="button" onClick={togglePlayback} aria-label={isPlaying ? "Pause" : "Play"}>
+        <button className={styles.primary} type="button" onClick={togglePlayback} aria-label={isPlaying ? "Pause" : "Play"} disabled={!track}>
           {isPlaying ? <Pause fill="currentColor" /> : <Play fill="currentColor" />}
         </button>
         <button type="button" onClick={next} aria-label="Next track"><SkipForward /></button>
@@ -175,7 +185,7 @@ export function PlayerDock({ player, onSave }: PlayerDockProps) {
             exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
           >
             <header><h2>Up next</h2><button type="button" onClick={() => setQueueOpen(false)} aria-label="Close queue"><X /></button></header>
-            <ol>{queue.map((item, index) => <li key={`${item.provider}:${item.id}`} data-current={String(index === currentIndex)}><button type="button" onClick={() => selectQueueIndex(index)}><span>{item.title}</span><small>{item.artist}</small></button><button className={styles.remove} type="button" onClick={() => removeFromQueue(getTrackKey(item))} aria-label={`Remove ${item.title} from queue`}><Trash2 size={16} /></button></li>)}</ol>
+            <ol>{queue.map((item, index) => <li key={`${item.provider}:${item.id}`} data-current={String(index === currentIndex)}><button type="button" onClick={() => selectQueueIndex(index)}><span>{item.title}</span><small>{item.artist}</small></button><button className={styles.remove} type="button" onClick={() => removeQueueItem(item, index)} aria-label={`Remove ${item.title} from queue`}><Trash2 size={16} /></button></li>)}</ol>
           </motion.aside>
         )}
       </AnimatePresence>
