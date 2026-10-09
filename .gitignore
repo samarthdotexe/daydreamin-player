@@ -5,6 +5,7 @@ test-results/
 .env
 .env.local
 .dev.vars
+.firebase/
 .DS_Store
 *.local
 *.tsbuildinfo
